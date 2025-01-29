@@ -1,0 +1,101 @@
+import { useState, useEffect } from "react";
+import axiosInstance from "../API/Api";
+import { useNavigate } from "react-router-dom";
+import Cookies from "js-cookie";
+//Material UI KIT
+import { Container } from "@mui/material";
+//components
+import HomeForm from "./components/HomeForm";
+import ButtonField from "./components/ButtonField";
+
+export function Home() {
+  const [data, setData] = useState([]); // Estado para armazenar os dados da API
+  const [loading, setLoading] = useState(true);
+  const [nothing, setNothing] = useState(false);
+  const navigate = useNavigate();
+
+  const fetchData = async () => {
+    try {
+      let response = await axiosInstance.get("tasks/");
+      if (response.data.length === 0) {
+        setNothing(true);
+      }
+      setData(response.data);
+    } catch (error) {
+      console.error("Erro:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData(); // Chama a função para buscar os dados ao carregar o componente
+  }, []); // O array vazio garante que o useEffect será executado apenas uma vez
+
+  async function deleteTable(e, taskID) {
+    e.stopPropagation();
+    try {
+      await axiosInstance.delete(`task/view/${taskID}`);
+      //atualizar o que foi deletado
+      const updatedData = data.filter((item) => item.id !== taskID); //Em outras palavras, ele remove o item com o id igual ao taskID.
+      setData(updatedData);
+    } catch (error) {
+      console.error("Erro:", error);
+    }
+  }
+
+  function viewTask(taskID) {
+    console.log(`Você clicou no item com id: ${taskID}`);
+    navigate(`/edit/task/${taskID}`);
+    return;
+  }
+
+  function logout() {
+    Cookies.remove("refresh_token", { path: "/" });
+    Cookies.remove("access_token", { path: "/" });
+    navigate("/");
+    return;
+  }
+
+  function editTask(e, taskID) {
+    e.stopPropagation();
+    navigate(`/edit/task/${taskID}`);
+  }
+
+  if (loading) {
+    return <div>loading...</div>;
+  }
+
+  return (
+    <Container maxWidth="lg" sx={{ padding: 2 }}>
+      <ButtonField onClick={logout} type={"button"}>
+        Logout
+      </ButtonField>
+      <div sx={{ alignItems: "center" }}>
+        <h1>HOME</h1>
+        {nothing ? (
+          <h2>No table created. Create a new task.</h2>
+        ) : (
+          data.map((item) => (
+            <HomeForm
+              {...{
+                item,
+                deleteTable,
+                viewTask,
+                editTask,
+                setNothing,
+              }}
+            ></HomeForm>
+          ))
+        )}
+        <ButtonField
+          onClick={() => navigate("/add/task/")}
+          color={"success"}
+          type={"button"}
+        >
+          Create Task
+        </ButtonField>
+      </div>
+    </Container>
+  );
+}
