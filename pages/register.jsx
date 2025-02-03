@@ -17,11 +17,14 @@ export function Register() {
   const registerUser = async (e) => {
     e.preventDefault();
     try {
-      let response = await axios.post("http://127.0.0.1:8000/api/register/", {
-        username: name,
-        email: email,
-        password: password,
-      });
+      let response = await axios.post(
+        "https://task-list-back-3h78.onrender.com/api/register/",
+        {
+          username: name,
+          email: email,
+          password: password,
+        }
+      );
       console.log(response.data);
       setAlert(false);
       navigate("/", { state: { success: true } });

@@ -17,10 +17,13 @@ export function Login() {
   async function buttonSend(e) {
     e.preventDefault();
     try {
-      let response = await axios.post("http://127.0.0.1:8000/api/login/", {
-        username: username,
-        password: password,
-      });
+      let response = await axios.post(
+        "https://task-list-back-3h78.onrender.com/api/login/",
+        {
+          username: username,
+          password: password,
+        }
+      );
       const result = response.data;
 
       // se receber o acces e refresh token.../sauva no Cookes
