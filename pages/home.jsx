@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import "./home.css";
 //Material UI KIT
-import { Box, Container, CircularProgress } from "@mui/material";
+import { Container, CircularProgress } from "@mui/material";
 //components
 import HomeForm from "./components/HomeForm";
 import ButtonField from "./components/ButtonField";
@@ -19,7 +19,9 @@ export function Home() {
     try {
       setLoading(true);
       let response = await axiosInstance.get("tasks/");
+      console.log(response.data.length);
       if (response.data.length === 0) {
+        setNothing(true);
       }
       setData(response.data);
     } catch (error) {
@@ -39,6 +41,9 @@ export function Home() {
       await axiosInstance.delete(`task/view/${taskID}`);
       //atualizar o que foi deletado
       const updatedData = data.filter((item) => item.id !== taskID); //Em outras palavras, ele remove o item com o id igual ao taskID.
+      if (updatedData.length === 0) {
+        setNothing(true);
+      }
       setData(updatedData);
     } catch (error) {
       console.error("Erro:", error);
@@ -58,11 +63,6 @@ export function Home() {
     return;
   }
 
-  function editTask(e, taskID) {
-    e.stopPropagation();
-    navigate(`/edit/task/${taskID}`);
-  }
-
   return (
     <Container maxWidth="lg" sx={{ padding: 2 }}>
       <ButtonField onClick={logout} type={"button"}>
@@ -70,15 +70,11 @@ export function Home() {
       </ButtonField>
       <div sx={{ alignItems: "center" }}>
         <h1>HOME</h1>
+        {nothing ? <h2>No table created. Create a new task.</h2> : ""}
         {loading ? (
           <div className="loading-Box">
             <CircularProgress />
           </div>
-        ) : (
-          ""
-        )}
-        {nothing ? (
-          <h2>No table created. Create a new task.</h2>
         ) : (
           data.map((item) => (
             <HomeForm
