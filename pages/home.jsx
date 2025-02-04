@@ -2,23 +2,24 @@ import { useState, useEffect } from "react";
 import axiosInstance from "../API/Api";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
+import "./home.css";
 //Material UI KIT
-import { Container } from "@mui/material";
+import { Box, Container, CircularProgress } from "@mui/material";
 //components
 import HomeForm from "./components/HomeForm";
 import ButtonField from "./components/ButtonField";
 
 export function Home() {
   const [data, setData] = useState([]); // Estado para armazenar os dados da API
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(null);
   const [nothing, setNothing] = useState(false);
   const navigate = useNavigate();
 
   const fetchData = async () => {
     try {
+      setLoading(true);
       let response = await axiosInstance.get("tasks/");
       if (response.data.length === 0) {
-        setNothing(true);
       }
       setData(response.data);
     } catch (error) {
@@ -62,10 +63,6 @@ export function Home() {
     navigate(`/edit/task/${taskID}`);
   }
 
-  if (loading) {
-    return <div>loading...</div>;
-  }
-
   return (
     <Container maxWidth="lg" sx={{ padding: 2 }}>
       <ButtonField onClick={logout} type={"button"}>
@@ -73,6 +70,13 @@ export function Home() {
       </ButtonField>
       <div sx={{ alignItems: "center" }}>
         <h1>HOME</h1>
+        {loading ? (
+          <div className="loading-Box">
+            <CircularProgress />
+          </div>
+        ) : (
+          ""
+        )}
         {nothing ? (
           <h2>No table created. Create a new task.</h2>
         ) : (
@@ -82,8 +86,6 @@ export function Home() {
                 item,
                 deleteTable,
                 viewTask,
-                editTask,
-                setNothing,
               }}
             ></HomeForm>
           ))
