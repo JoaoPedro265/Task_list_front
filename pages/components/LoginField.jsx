@@ -11,13 +11,14 @@ const LoginField = ({
   password,
   alert,
   success,
+  loading,
 }) => {
   return (
     <form onSubmit={buttonSend}>
       <Box className="login-Box">
         {alert ? (
           <Alert variant="outlined" severity="warning">
-            Incorrect or unauthenticated username or password.
+            Invalid or unauthenticated name or password.
           </Alert>
         ) : (
           ""
@@ -46,9 +47,15 @@ const LoginField = ({
           value={password}
           onChange={(e) => setPassword(e.target.value)} // Corrigido para 'setPassword' label="Outlined" variant="outlined" /
         />
-        <Button variant="contained" type="submit">
-          Submit
-        </Button>
+        {loading ? (
+          <Button variant="contained" disabled>
+            loadinig...
+          </Button>
+        ) : (
+          <Button variant="contained" type="submit">
+            Submit
+          </Button>
+        )}
         <a href="register/">Create Account</a>
       </Box>
     </form>

@@ -6,6 +6,7 @@ import axios from "axios";
 import LoginField from "./components/LoginField";
 
 export function Login() {
+  const [loading, setLoading] = useState(null);
   const [username, setUsername] = useState(""); // Corrigido para 'setUsername'
   const [password, setPassword] = useState(""); // Corrigido para 'setPassword'
   const [alert, setAlert] = useState(false);
@@ -17,6 +18,7 @@ export function Login() {
   async function buttonSend(e) {
     e.preventDefault();
     try {
+      setLoading(true);
       let response = await axios.post(
         "https://task-list-back-3h78.onrender.com/api/login/",
         {
@@ -25,7 +27,6 @@ export function Login() {
         }
       );
       const result = response.data;
-
       // se receber o acces e refresh token.../sauva no Cookes
       if (result.access && result.refresh) {
         // Salvando os tokens nos cookies
@@ -42,6 +43,7 @@ export function Login() {
         alert("Usuário ou senha incorretos");
       }
     } catch (error) {
+      setLoading(false);
       setAlert(true);
       console.error("Erro ao buscar dados:", error); // Trata erros na requisição
     }
@@ -57,6 +59,7 @@ export function Login() {
         password,
         alert,
         success,
+        loading,
       }}
     ></LoginField>
   );
