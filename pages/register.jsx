@@ -20,7 +20,7 @@ export function Register() {
     try {
       setLoading(true);
       let response = await axios.post(
-        "https://task-list-back-3h78.onrender.com/api/register/",
+        "https://task-list-back-hr8k.onrender.com/api/register/",
         {
           username: name,
           email: email,
